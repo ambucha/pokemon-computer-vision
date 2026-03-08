@@ -7,6 +7,7 @@ from PIL import Image
 
 from src.model import build_model
 from src.dataset import val_transforms
+from src.crop import crop_card
 
 
 # --- Grad-CAM ---
@@ -62,7 +63,7 @@ def show_gradcam(img_path, model, device, ax, title):
                  .resize((224, 224), Image.BILINEAR)
         ) / 255.0
     )
-    img_resized = img.resize((224, 224))
+    img_resized = crop_card(img).resize((224, 224))
 
     ax.imshow(img_resized)
     ax.imshow(cam_resized, cmap='jet', alpha=0.45)

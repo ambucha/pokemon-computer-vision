@@ -67,18 +67,30 @@ if __name__ == '__main__':
               f'Train loss: {train_loss:.4f} acc: {train_acc:.3f} | '
               f'Val loss: {val_loss:.4f} acc: {val_acc:.3f}')
 
-    # Phase 2: unfreeze everything, fine-tune at low lr
+    # Phase 2: unfreeze everything, fine-tune at low lr with early stopping
     print('--- Phase 2: full fine-tune ---')
     for param in model.parameters():
         param.requires_grad = True
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 
-    for epoch in range(10):
+    best_val_loss = float('inf')
+    patience, patience_counter = 5, 0
+
+    for epoch in range(20):
         train_loss, train_acc = train_epoch(model, train_loader, criterion, optimizer, device)
         val_loss,   val_acc   = eval_epoch(model, test_loader,  criterion, device)
-        print(f'Epoch {epoch+1}/10 | '
+        print(f'Epoch {epoch+1}/20 | '
               f'Train loss: {train_loss:.4f} acc: {train_acc:.3f} | '
               f'Val loss: {val_loss:.4f} acc: {val_acc:.3f}')
 
-    torch.save(model.state_dict(), 'model.pth')
-    print('Saved model.pth')
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            patience_counter = 0
+            torch.save(model.state_dict(), 'model.pth')
+        else:
+            patience_counter += 1
+            if patience_counter >= patience:
+                print(f'Early stopping at epoch {epoch+1}')
+                break
+
+    print(f'Saved best model (val loss: {best_val_loss:.4f})')
