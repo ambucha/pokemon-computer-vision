@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import json; nb=json.load\\(open\\(''c:/Users/nicol/Documents/pokemon-computer-vision/pokemon-computer-vision/exploration.ipynb''\\)\\); print\\(len\\(nb[''cells'']\\)\\)\")"
+    ]
+  }
+}
