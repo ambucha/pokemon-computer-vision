@@ -74,12 +74,14 @@ if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model  = build_model().to(device)
     model.load_state_dict(torch.load('model.pth', map_location=device))
+    for param in model.parameters():
+        param.requires_grad = True
 
     train_df = pd.read_csv('train_labels.csv')
 
     n = 4
     samples = (train_df.groupby('label')
-                       .apply(lambda x: x.sample(n, random_state=42), include_groups=False)
+                       .apply(lambda x: x.sample(n, random_state=42))
                        .reset_index(drop=True))
 
     fig, axes = plt.subplots(2, n, figsize=(14, 7))
